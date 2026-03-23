@@ -18,7 +18,7 @@ export const getBookigs = async (req, res) => {
 };
 
 // Create a new booking
-export const createBooking = async (req, res) => {
+export const addBooking = async (req, res) => {
   try {
     const {
       customerName,

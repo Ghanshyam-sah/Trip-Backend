@@ -1,4 +1,4 @@
-import { Blog } from "../models/blog.model";
+import { Blog } from "../models/blog.model.js";
 
 // Get all blogs
 export const getBlogs = async (req, res) => {
@@ -18,15 +18,8 @@ export const getBlogs = async (req, res) => {
 // Create a new blog
 export const addBlog = async (req, res) => {
   try {
-    const {
-      title,
-      content,
-      excerpt,
-      bannerUrl,
-      authorId,
-      isPublished,
-      publishedDate,
-    } = req.body;
+    const { title, content, excerpt, bannerUrl, isPublished, publishedDate } =
+      req.body;
 
     const slug = title
       .toLowerCase()
@@ -45,7 +38,7 @@ export const addBlog = async (req, res) => {
       excerpt,
       bannerUrl,
       slug,
-      authorId,
+      authorId: req.user.userId,
       isPublished: isPublished || false,
       publishedDate: isPublished ? publishedDate || new Date() : null,
     });
@@ -78,6 +71,13 @@ export const updateBlog = async (req, res) => {
       });
     }
 
+    if (req.user.userId !== existingBlog.authorId) {
+      res.status(403).json({
+        message: "You are not authorized to update this blog",
+      });
+      return;
+    }
+
     existingBlog.title = title || existingBlog.title;
     existingBlog.content = content || existingBlog.content;
     existingBlog.excerpt = excerpt || existingBlog.excerpt;
@@ -107,6 +107,13 @@ export const deleteBlog = async (req, res) => {
       return res.status(404).json({
         message: "Blog not found",
       });
+    }
+
+    if (req.user.userId !== existingBlog.authorId) {
+      res.status(403).json({
+        message: "You are not authorized to delete this blog",
+      });
+      return;
     }
 
     await Blog.findByIdAndDelete(id);

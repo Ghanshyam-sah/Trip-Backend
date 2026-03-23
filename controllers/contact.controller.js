@@ -1,4 +1,4 @@
-import { Contact } from "../models/contact.model";
+import { Contact } from "../models/contact.model.js";
 
 // Get all messages
 // Create a new message

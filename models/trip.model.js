@@ -11,7 +11,7 @@ const tripSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: Decimal128,
+      type: Number,
       required: true,
     },
     duration: {

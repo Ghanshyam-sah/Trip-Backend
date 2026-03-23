@@ -12,3 +12,5 @@ router.get("/contacts", getContacts);
 router.post("/contacts", createContact);
 router.put("/contacts/:id", updateContactStatus);
 router.delete("/contacts/:id", deleteContact);
+
+export default router;
