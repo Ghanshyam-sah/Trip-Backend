@@ -13,9 +13,6 @@ configDotenv();
 const app = express();
 app.use(express.json());
 
-// middlewares
-app.use(authorization);
-
 app.use("/api/auth", authRoutes);
 app.use("/api", subsbcriberRoutes);
 app.use("/api", blogRoutes);

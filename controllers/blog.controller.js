@@ -3,7 +3,7 @@ import { Blog } from "../models/blog.model.js";
 // Get all blogs
 export const getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find();
+    const blogs = await Blog.find({ isPublished: true });
 
     if (blogs.length === 0) {
       res.status(404).json({
@@ -26,7 +26,7 @@ export const addBlog = async (req, res) => {
       .replace(/ /g, "-")
       .replace(/[^\w-]+/g, "");
 
-    if (!title || !content || !excerpt || !bannerUrl || !authorId) {
+    if (!title || !content || !excerpt || !bannerUrl) {
       return res.status(400).json({
         message: "All fields are required",
       });
@@ -51,7 +51,7 @@ export const addBlog = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error creating blog",
+      message: error.message || "Error creating blog",
     });
   }
 };
@@ -71,7 +71,7 @@ export const updateBlog = async (req, res) => {
       });
     }
 
-    if (req.user.userId !== existingBlog.authorId) {
+    if (req.user.userId !== existingBlog.authorId.toString()) {
       res.status(403).json({
         message: "You are not authorized to update this blog",
       });
@@ -109,7 +109,7 @@ export const deleteBlog = async (req, res) => {
       });
     }
 
-    if (req.user.userId !== existingBlog.authorId) {
+    if (req.user.userId !== existingBlog.authorId.toString()) {
       res.status(403).json({
         message: "You are not authorized to delete this blog",
       });

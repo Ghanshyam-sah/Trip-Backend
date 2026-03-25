@@ -1,17 +1,11 @@
 import jwt from "jsonwebtoken";
 
 export const authorization = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  const token = authHeader.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).json({
-      message: "Access denied. No token provided.",
-    });
-  }
-
   try {
+    const authHeader = req.headers.authorization;
+
+    const token = authHeader.split(" ")[1];
+
     const decoded = jwt.verify(token, "This-is-my-jwt-secret");
 
     req.user = decoded;
@@ -19,7 +13,7 @@ export const authorization = (req, res, next) => {
     next();
   } catch (error) {
     return res.status(401).json({
-      message: "Invalid token.",
+      message: "Invalid token or token not provided.",
     });
   }
 };
