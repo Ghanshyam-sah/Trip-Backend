@@ -17,6 +17,24 @@ export const getTrips = async (req, res) => {
   }
 };
 
+//Get trips by id i.e one trip only
+
+export const getTripById = async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({ message: "hello No trips found" });
+    }
+
+    res.status(200).json(trip);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching trips",
+    });
+  }
+};
+
 // Create a trip
 export const addTrip = async (req, res) => {
   try {
@@ -59,6 +77,7 @@ export const addTrip = async (req, res) => {
       imageUrl,
       maxParticipants,
       availableSeats,
+      createdBy: req.user.userId,
     });
 
     await newTrip.save();
