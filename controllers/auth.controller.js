@@ -65,15 +65,17 @@ export const loginUser = async (req, res) => {
       {
         userId: user._id,
         name: user.name,
+        role: user.role,
       },
       "This-is-my-jwt-secret",
-      { expiresIn: "1h" },
+      { expiresIn: "7d" },
     );
 
     const refreshToken = jwt.sign(
       {
         userId: user._id,
         name: user.name,
+        role: user.role,
       },
       "This-is-my-jwt-refresh-secret",
       { expiresIn: "7d" },

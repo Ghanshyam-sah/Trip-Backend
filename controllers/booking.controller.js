@@ -1,13 +1,44 @@
 import { Booking } from "../models/bookings.model.js";
+import { Trip } from "../models/trip.model.js";
 
 // Get all bookings
 export const getBookigs = async (req, res) => {
   try {
-    const bookings = await Booking.find();
+    const bookings = await Booking.find().populate("tripId","title");
 
-    if (bookings.length === 0) {
+    res.status(200).json(bookings);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching bookings",
+    });
+  }
+};
+
+//get bookings by ID
+
+export const getBookingsById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const booking = await Booking.findById(id).populate("tripId","title description price");
+
+    if (!booking) {
       return res.status(404).json({ message: "No bookings found" });
     }
+
+    res.status(200).json(booking);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching booking",
+    });
+  }
+};
+
+//get my bookings
+
+export const getMyBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({customerId: req.user.userId}).populate("tripId","title");
+
 
     res.status(200).json(bookings);
   } catch (error) {
@@ -21,35 +52,46 @@ export const getBookigs = async (req, res) => {
 export const addBooking = async (req, res) => {
   try {
     const {
-      customerName,
       customerEmail,
       customerPhone,
       numberOfPeople,
-      totalPrice,
-      bookingDate,
+      tripId
     } = req.body;
 
     if (
-      !customerName ||
       !customerEmail ||
       !customerPhone ||
       !numberOfPeople ||
-      !totalPrice
+      !tripId
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    const trip = await Trip.findById(tripId);
+    if(!trip){
+      return res.status(400).json({message:"Trip not Found"});
+    }
+
+
+    if(trip.availableSeats < numberOfPeople){
+      return res.status(400).json({message: "Number of people is more than the available seats"})
+    }
+
     const newBooking = new Booking({
-      customerName,
+      customerName: req.user.name ,
       customerEmail,
       customerPhone,
       numberOfPeople,
-      totalPrice,
-      bookingDate,
-      status: "pending",
+      totalPrice: numberOfPeople * trip.price ,
+      tripId: tripId,
+      customerId: req.user.userId,
     });
 
     await newBooking.save();
+
+    trip.availableSeats -= numberOfPeople;
+    await trip.save();
+
     res.status(201).json(newBooking);
   } catch (error) {
     res.status(500).json({

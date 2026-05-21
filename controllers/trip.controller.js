@@ -5,9 +5,7 @@ export const getTrips = async (req, res) => {
   try {
     const trips = await Trip.find();
 
-    if (trips.length === 0) {
-      return res.status(404).json({ message: "No trips found" });
-    }
+   
 
     res.status(200).json(trips);
   } catch (error) {
