@@ -9,9 +9,6 @@ export const getContacts = async (req, res) => {
   try {
     const contacts = await Contact.find();
 
-    if (contacts.length === 0) {
-      return res.status(404).json({ message: "No contacts found" });
-    }
 
     res.status(200).json(contacts);
   } catch (error) {

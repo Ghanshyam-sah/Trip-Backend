@@ -5,11 +5,7 @@ export const getBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find({ isPublished: true });
 
-    if (blogs.length === 0) {
-      res.status(404).json({
-        message: "No blogs found",
-      });
-    }
+  
 
     res.status(200).json(blogs);
   } catch (error) {}
